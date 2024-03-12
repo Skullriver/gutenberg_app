@@ -1,0 +1,70 @@
+.search-results-page {
+    padding-top: 20px; /* Adds padding above the search bar */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centers the content */
+    width: 100%;
+  }
+  
+  .search-bar {
+    width: 80%; /* Sets search bar width to 80% */
+    max-width: 600px; /* Adjust this value based on your design needs */
+    margin-bottom: 20px; /* Adds some space below the search bar */
+  }
+  
+  .results-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Creates a responsive grid layout */
+    gap: 20px; /* Space between grid items */
+    width: 80%; /* Limits the width of the results section to 80% */
+    max-width: 1200px; /* Adjust based on your maximum width preference */
+  }
+  
+  .book-result {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centers the content of each book result */
+  }
+  
+  .book-result img {
+    width: 130px; /* Fixed width for images */
+    height: auto; /* Fixed height for images */
+    object-fit: cover; /* Ensures the images cover the area without distorting */
+    box-shadow: -10px 10px 25px rgba(0, 0, 0, 0.4); /* Adds shadow effect */
+    margin-bottom: 25px; /* Adds some space below the image */
+  }
+
+  .book-result span {
+    font-size: 1rem; /* Sets the font size to 1.2rem */
+    font-weight: 600;
+    text-align: center; /* Centers the text */
+    margin-bottom: 5px; /* Adds some space below the text */
+    max-width: 130px;
+    overflow: hidden; /* Hide overflow text */
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Number of lines you want to display */
+    -webkit-box-orient: vertical;
+    text-overflow: ellipsis; /* Add ellipsis at the end of the overflow text */
+    white-space: normal; 
+  }
+  
+  .loader {
+    border: 4px solid #f3f3f3; /* Light grey */
+    border-top: 4px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 2s linear infinite;
+  }
+  
+  
+  /* Safari */
+  @-webkit-keyframes spin {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }

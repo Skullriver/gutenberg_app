@@ -1,0 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
+
+
+.App {
+  text-align: center;
+  /*max-width: 1200px;*/
+  margin: 0 auto;
+  /*padding: 20px;*/
+  /*padding-top: 50px;*/
+}
+
+/* Add any global styles here */
+body {
+  background-image: url('assets/rice-paper-2.png');
+  background-repeat: repeat; /* for a seamless texture */
+  font-family: 'Raleway', sans-serif;
+  background-color: #FBF2E3;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}

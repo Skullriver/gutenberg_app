@@ -1,0 +1,29 @@
+.main-page {
+    display: flex;
+    justify-content: space-between;
+}
+
+.left-panel {
+    flex-basis: 50%;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Aligns children vertically in the center */
+    height: 100vh;
+}
+
+.right-panel {
+    flex-basis: 50%;
+    padding-left: 10px;
+    /*padding: 10px;*/
+    /*background-color: #f8f8f8;*/
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+}
+
+/* Additional styles for alternating book covers with letters, you may need to adjust these based on actual content */
+.right-panel::after {
+    content: '';
+    flex-grow: 999999999;
+}
