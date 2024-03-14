@@ -85,8 +85,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'gutenberg_app',
-        'USER': 'skullriver',
-        'PASSWORD': '',
+        'USER': 'gutenberg',
+        'PASSWORD': '123456',
         'HOST': 'localhost',
         'PORT': '5432',
     }

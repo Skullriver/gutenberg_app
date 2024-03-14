@@ -47,3 +47,12 @@ class WordPositions(models.Model):
 
     class Meta:
         unique_together = ('book', 'word')
+
+class AdjacencyList(models.Model):
+    book = models.OneToOneField(Book, on_delete=models.CASCADE, primary_key=True)
+    adjacent_book_ids = ArrayField(models.IntegerField())
+
+class EdgeList(models.Model):
+    source_book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='source_edges')
+    target_book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='target_edges')
+    weight = models.FloatField(default=1.0)

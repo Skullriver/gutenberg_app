@@ -24,14 +24,17 @@ def preprocess_text(text, language='english'):
 
     # Find the start of the Project Gutenberg eBook content
     start_pattern = re.compile(r"\*\*\* START OF THIS PROJECT GUTENBERG EBOOK .+ \*\*\*")
+    end_pattern = re.compile(r"\*\*\* END OF THIS PROJECT GUTENBERG EBOOK .+ \*\*\*")
+    
     start_match = start_pattern.search(text)
+    end_match = end_pattern.search(text)
+    
     
     # If the start line is found, trim the text to start from there
-    if start_match:
-        start_pos = start_match.end()
-        text = text[start_pos:]
+    if start_match and end_match:
+        text = text[start_match.end():end_match.start()]
     else:
-        # If start line is not found, assume entire text needs processing
+        # If the start or end line is not found, assume entire text needs processing
         pass
     
     # Define stemmer based on language

@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 import requests
 import csv
-from .models import Book, IndexTable, Word, WordFrequencies, WordPositions
+from .models import Book, IndexTable, Word, WordFrequencies, WordPositions, EdgeList, AdjacencyList
 from .preprocess import preprocess_text
 from django.utils.dateparse import parse_date
 from django.db.models import Count, Sum
@@ -76,51 +76,54 @@ def simple_json(request):
     
     return JsonResponse({"status": "success", "message": "Books metadata inserted/updated successfully."})
 
+def fetch_books_keywords():
+    books_keywords = {}
+    sql = """
+    SELECT wf.book_id, array_agg(w.word) AS keywords
+    FROM preprocess_wordfrequencies AS wf
+    JOIN preprocess_word AS w ON wf.word_id = w.id
+    GROUP BY wf.book_id;
+    """
+    with connection.cursor() as cursor:
+        cursor.execute(sql)
+        for row in cursor.fetchall():
+            book_id, keywords = row
+            books_keywords[book_id] = set(keywords)  # Convert the list to a set for unique keywords
 
-def calculate_proximity_score(word_positions, query_words):
-    # Assuming word_positions is a dictionary where the key is a word
-    # and the value is a list of positions that word appears in the document.
-    # Initialize min_distance to infinity to find the minimum distance scenario.
-    min_distance = float('inf')
-    best_sequence_score = 0
+    return books_keywords
 
-    if len(query_words) > 1:
-        for start_pos in word_positions[query_words[0]]:
-            # Check if subsequent words follow in sequence
-            sequence_match = True
-            current_pos = start_pos
-            for i in range(1, len(query_words)):
-                next_word_positions = word_positions[query_words[i]]
-                # Check if next word is exactly after the current one
-                if current_pos + 1 in next_word_positions:
-                    current_pos += 1
-                else:
-                    sequence_match = False
-                    break
+def calculate_jaccard_and_populate_graph(request):
+    # Step 1: Extract keywords for each book
+    books_keywords = fetch_books_keywords()
+    
+    # Step 2: Calculate Jaccard similarity between each pair of books
+    for book_id, keywords in books_keywords.items():
+        adjacency_book_ids = []
+        for other_book_id, other_keywords in books_keywords.items():
+            if book_id == other_book_id:
+                continue  # Skip comparing the book with itself
+            print(f"Calculating Jaccard similarity between {book_id} and {other_book_id}")
+            
+            # Calculate Jaccard similarity
+            intersection = len(keywords.intersection(other_keywords))
+            union = len(keywords.union(other_keywords))
+            jaccard_similarity = intersection / union if union != 0 else 0
 
-            if sequence_match:
-                # If a perfect sequence is found, assign the highest score and break
-                best_sequence_score = 1
-                break
-            else:
-                # If not a perfect sequence, optionally calculate distance for proximity
-                # This part can be adapted based on how you want to handle near matches.
-                for i in range(len(query_words) - 1):
-                    for pos1 in word_positions[query_words[i]]:
-                        for pos2 in word_positions[query_words[i+1]]:
-                            distance = abs(pos1 - pos2)
-                            if distance < min_distance:
-                                min_distance = distance
-
-    # Update proximity score based on findings
-    if best_sequence_score == 1:
-        proximity_score = 2  # Highest score for perfect sequence match
-    else:
-        proximity_score = 0 if min_distance == float('inf') else 1 / min_distance
-
-    return proximity_score
-
-
-
-
+            print(f"Jaccard similarity: {jaccard_similarity}")
+            
+            # Populate EdgeList - consider a similarity threshold if necessary
+            if jaccard_similarity > 0:
+                EdgeList.objects.update_or_create(
+                    source_book_id=book_id,
+                    target_book_id=other_book_id,
+                    defaults={'weight': jaccard_similarity}
+                )
+                adjacency_book_ids.append(other_book_id)
+        
+        # Populate AdjacencyList
+        AdjacencyList.objects.update_or_create(
+            book_id=book_id,
+            defaults={'adjacent_book_ids': adjacency_book_ids}
+        )
+    return JsonResponse({"status": "success", "message": "Graph populated successfully."})
     

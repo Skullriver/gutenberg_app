@@ -114,7 +114,8 @@ def search_books(request):
                 'title': title,
                 'cover': f'https://www.gutenberg.org/cache/epub/{book_id}/{book_id}-cover.png',
                 'words': [],
-                'proximity_score': 0
+                'proximity_score': 0, 
+                'tf_idf_score': 0
         }
         books_info[book_id]['words'].append({'word': word, 'positions': positions, 'frequency': frequency})
         
@@ -133,6 +134,9 @@ def search_books(request):
     for book_id, book_info in books_info.items():
         word_positions = {word['word']: word['positions'] for word in book_info['words']}
         books_info[book_id]['proximity_score'] = calculate_proximity_score(word_positions, query_words)
+        books_info[book_id]['tf_idf_score'] = sum(word['frequency'] * idf_scores[word['word']] for word in book_info['words'])
+        
+    books_info = sorted(books_info.values(), key=lambda x: x['tf_idf_score'], reverse=True)
         # proximity_scores[book_id] = simplified_proximity_score(word_positions, query_words)
      
     return JsonResponse({'results': books_info})
