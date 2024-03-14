@@ -56,6 +56,8 @@ def calculate_proximity_score(word_positions, query_words):
     score = sequenced_pairs / total_pairs + 1 / average_distance
     return score
 
+
+
 def search_books(request):
     query_phrase = request.GET.get('query', '').strip()
     
@@ -63,12 +65,18 @@ def search_books(request):
 
     print(f"Searching for: {query_words}")
 
+    w1, w2, w3, w4 = 0.4, 0.3, 0.15, 0.15  # Weights for final score components
+    w_tf_idf, w_prox = 0.7, 0.3  # Weights for relevance components
+    relevance_boost = 1
+
+    is_phrase_query = len(query_words) > 1
+
     query_words_list = ','.join([f"'{word}'" for word in query_words])
     num_query_words = len(set(query_words))
 
     sql = f"""
     WITH matching_books AS (
-    SELECT book.book_id, book.title,
+    SELECT book.book_id, book.title, book.authors,
            COUNT(DISTINCT wf.word_id) AS matching_words
     FROM preprocess_book AS book
     INNER JOIN preprocess_wordfrequencies AS wf ON book.book_id = wf.book_id
@@ -88,13 +96,20 @@ def search_books(request):
         INNER JOIN preprocess_word AS w ON wf.word_id = w.id
         WHERE w.word IN ({query_words_list}) -- Use placeholders appropriately here
         GROUP BY wf.book_id, w.word, wf.frequency
+    ), max_frequencies_per_book AS (
+        SELECT wf.book_id, MAX(wf.frequency) AS max_raw_freq
+        FROM preprocess_wordfrequencies AS wf
+        GROUP BY wf.book_id
     )
-    SELECT mb.book_id, mb.title, wp.word, wp.positions, wf.frequency
+    SELECT mb.book_id, mb.title, mb.authors, wp.word, wp.positions, wf.frequency, mf.max_raw_freq, it.pagerank, it.betweenness_centrality, it.closeness_centrality
     FROM matching_books mb
     INNER JOIN word_positions wp ON mb.book_id = wp.book_id
     INNER JOIN word_frequencies wf ON mb.book_id = wf.book_id AND wp.word = wf.word
+    INNER JOIN max_frequencies_per_book mf ON mb.book_id = mf.book_id
+    INNER JOIN preprocess_indextable it ON mb.book_id = it.book_id
     ORDER BY mb.book_id, wp.word;
     """
+
 
     with connection.cursor() as cursor:
         cursor.execute(sql, [num_query_words])
@@ -104,21 +119,34 @@ def search_books(request):
 
     
     for row in result:
-        book_id, title, word, positions_str, frequency = row
+        book_id, title, authors, word, positions_str, frequency, max_frequency, page_rank, betweenness, closeness = row
     
         positions = positions_str  # If positions are directly usable as a list, just assign them
+
+        title_words, _, _ = preprocess_text(title)
+        author_words, _, _ = preprocess_text(authors)
        
         if book_id not in books_info:
             books_info[book_id] = {
                 'id': book_id,
                 'title': title,
+                'authors': authors,
                 'cover': f'https://www.gutenberg.org/cache/epub/{book_id}/{book_id}-cover.png',
                 'words': [],
                 'proximity_score': 0, 
-                'tf_idf_score': 0
+                'tf_idf_score': 0,
+                'relevance': 0,
+                'pagerank': page_rank,
+                'betweenness_centrality': betweenness,
+                'closeness_centrality': closeness,
+                'final_score': 0
         }
-        books_info[book_id]['words'].append({'word': word, 'positions': positions, 'frequency': frequency})
         
+        books_info[book_id]['words'].append({'word': word, 'positions': positions, 'tf': 0.5 + (0.5 * frequency / max_frequency), 'frequency': frequency})
+        if set(query_words) & set(title_words):
+            books_info[book_id]['relevance'] += relevance_boost
+        if set(query_words) & set(author_words):
+            books_info[book_id]['relevance'] += relevance_boost
 
     idf_scores = {}
     total_books = Book.objects.count()
@@ -134,9 +162,20 @@ def search_books(request):
     for book_id, book_info in books_info.items():
         word_positions = {word['word']: word['positions'] for word in book_info['words']}
         books_info[book_id]['proximity_score'] = calculate_proximity_score(word_positions, query_words)
-        books_info[book_id]['tf_idf_score'] = sum(word['frequency'] * idf_scores[word['word']] for word in book_info['words'])
+        books_info[book_id]['tf_idf_score'] = sum(word['tf'] * idf_scores[word['word']] for word in book_info['words'])
+
+        if is_phrase_query:
+            relevance = w_tf_idf * book_info['tf_idf_score'] + w_prox * book_info['proximity_score']
+        else:
+            relevance = book_info['tf_idf_score']  # For single word queries, only TF-IDF score is considered
         
-    books_info = sorted(books_info.values(), key=lambda x: x['tf_idf_score'], reverse=True)
+        final_score = book_info['relevance'] + (w1 * relevance) + (w2 * books_info[book_id]['pagerank']) + (w3 * books_info[book_id]['betweenness_centrality']) + (w4 * books_info[book_id]['closeness_centrality'])
+
+        # Update the book_info dictionary with the final score
+        books_info[book_id]['final_score'] = final_score
+        
+        
+    books_info = sorted(books_info.values(), key=lambda x: x['final_score'], reverse=True)
         # proximity_scores[book_id] = simplified_proximity_score(word_positions, query_words)
      
     return JsonResponse({'results': books_info})

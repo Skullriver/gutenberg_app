@@ -14,16 +14,10 @@ class Book(models.Model):
 
 class IndexTable(models.Model):
     book = models.ForeignKey('Book', on_delete=models.CASCADE, related_name='index_metrics')
-    word = models.ForeignKey('Word', on_delete=models.CASCADE, related_name='metrics')
     betweenness_centrality = models.FloatField(default=0.0)
     closeness_centrality = models.FloatField(default=0.0)
     pagerank = models.FloatField(default=0.0)
 
-    class Meta:
-        unique_together = ('book', 'word')
-
-    def __str__(self):
-        return f"{self.word.word} in {self.book.title}"
 
 
 class Word(models.Model):

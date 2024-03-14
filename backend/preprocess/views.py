@@ -95,6 +95,7 @@ def fetch_books_keywords():
 def calculate_jaccard_and_populate_graph(request):
     # Step 1: Extract keywords for each book
     books_keywords = fetch_books_keywords()
+    processed_pairs = set()
     
     # Step 2: Calculate Jaccard similarity between each pair of books
     for book_id, keywords in books_keywords.items():
@@ -112,13 +113,15 @@ def calculate_jaccard_and_populate_graph(request):
             print(f"Jaccard similarity: {jaccard_similarity}")
             
             # Populate EdgeList - consider a similarity threshold if necessary
-            if jaccard_similarity > 0:
-                EdgeList.objects.update_or_create(
-                    source_book_id=book_id,
-                    target_book_id=other_book_id,
-                    defaults={'weight': jaccard_similarity}
-                )
+            if jaccard_similarity > 0.3:
+                if (book_id, other_book_id) not in processed_pairs and (other_book_id, book_id) not in processed_pairs:
+                    EdgeList.objects.update_or_create(
+                        source_book_id=book_id,
+                        target_book_id=other_book_id,
+                        defaults={'weight': jaccard_similarity}
+                    )
                 adjacency_book_ids.append(other_book_id)
+                processed_pairs.add((book_id, other_book_id))
         
         # Populate AdjacencyList
         AdjacencyList.objects.update_or_create(
