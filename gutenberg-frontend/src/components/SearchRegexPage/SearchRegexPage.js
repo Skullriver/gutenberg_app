@@ -4,11 +4,10 @@ import axios from 'axios';
 import SearchBar from '../SearchBar/SearchBar';
 import PaginationElem from '../SearchResultPage/Pagination';
 import CustomSwiper from '../SearchResultPage/CustomSwiper';
-import './searchResultPage.css';
+import '../SearchResultPage/searchResultPage.css';
 import Header from '../Header/Header';
 
-
-const SearchResultPage = () => {
+const SearchRegexPage = () => {
 
     const location = useLocation();
     const [results, setResults] = useState([]);
@@ -29,7 +28,7 @@ const SearchResultPage = () => {
       setIsLoading(true);
       try {
         const response = await axios.get(`http://127.0.0.1:8000/api/search`, {
-          params: { query: searchTerm }
+          params: { regex: searchTerm }
         });
         const books = Object.values(response.data.results);
         const suggestions =  Object.values(response.data.suggestions);
@@ -49,9 +48,9 @@ const SearchResultPage = () => {
     const currentBooks = results.slice(indexOfFirstBook, indexOfLastBook);
 
   return (
-    <div> 
-      <Header />
-      <div className="search-results-page">
+    <div>
+        <Header />
+        <div className="search-results-page">
         <SearchBar onSearch={performSearch} initialSearchTerm={searchTerm}/>
       <h2>Search Results</h2>
       {isLoading ? (
@@ -87,4 +86,4 @@ const SearchResultPage = () => {
   );
 };
 
-export default SearchResultPage;
+export default SearchRegexPage;

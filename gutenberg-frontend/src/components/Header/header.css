@@ -1,0 +1,33 @@
+/* header.css */
+.app-header {
+    /* padding: 50px 0; */
+  }
+  
+  .app-header nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+    display: flex;
+  }
+  
+  .app-header nav ul li {
+    display: inline;
+    padding: 30px 50px;
+  }
+  
+  .app-header nav ul li a {
+    text-decoration: none;
+    color: black; /* Set links to black */
+    font-size: 16px; /* Adjust as needed */
+  }
+  
+  .app-header nav ul li a:hover {
+    color: #555; /* Slightly darker on hover */
+  }
+  
+  /* Optional: Specific styling for the icon */
+  .fa-home {
+    font-size: 20px; /* Adjust icon size as needed */
+  }
+  

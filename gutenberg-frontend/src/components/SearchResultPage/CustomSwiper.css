@@ -1,0 +1,31 @@
+/* CustomSwiper.css */
+.custom-swiper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  
+  .swiper-slide {
+    width: 200px; /* Adjust based on your needs */
+    text-align: center;
+  }
+  
+  .swiper-button {
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    font-size: 24px; /* Adjust size as needed */
+    padding: 0 20px; /* Adjust padding as needed */
+  }
+  
+  .book img {
+    width: 100%; /* Adjust based on your needs */
+    height: auto;
+    margin-bottom: 10px;
+  }
+  
+  .app-header nav ul li {
+  
+    border: none !important;
+  }

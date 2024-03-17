@@ -5,16 +5,15 @@
 
 .left-panel {
     flex-basis: 50%;
-    padding: 10px;
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Aligns children vertically in the center */
+    justify-content: start; /* Aligns children vertically in the center */
     height: 100vh;
 }
 
 .right-panel {
     flex-basis: 50%;
-    padding-left: 10px;
+    /* padding-left: 10px; */
     /*padding: 10px;*/
     /*background-color: #f8f8f8;*/
     display: flex;
@@ -26,4 +25,11 @@
 .right-panel::after {
     content: '';
     flex-grow: 999999999;
+}
+
+.search-bar-main{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 80%;
 }

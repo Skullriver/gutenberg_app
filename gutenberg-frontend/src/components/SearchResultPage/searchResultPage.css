@@ -1,4 +1,4 @@
-.search-results-page {
+.search-results-page, .results {
     padding-top: 20px; /* Adds padding above the search bar */
     display: flex;
     flex-direction: column;
@@ -7,9 +7,10 @@
   }
   
   .search-bar {
-    width: 80%; /* Sets search bar width to 80% */
-    max-width: 600px; /* Adjust this value based on your design needs */
-    margin-bottom: 20px; /* Adds some space below the search bar */
+    width: 80%;
+    max-width: 600px;
+    margin: 0 auto;
+    margin-bottom: 20px;
   }
   
   .results-list {
@@ -68,3 +69,72 @@
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
   }
+
+  .pagination {
+    display: flex;
+    list-style: none;
+    justify-content: center;
+    padding: 0;
+}
+
+.page-item {
+    margin: 0 5px;
+}
+
+.page-link, .page-item button {
+    background-color: transparent;
+    border: 1px solid #ccc; /* Add a subtle border to make the buttons visible */
+    color: #333; /* Default text color */
+    padding: 5px 10px;
+    cursor: pointer;
+    text-decoration: none;
+    border-radius: 5px; /* Optional: rounds the corners of the buttons */
+}
+
+.page-link:hover, .page-item button:hover {
+    background-color: #f8f8f8; /* Light grey background on hover */
+}
+
+.page-item button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.page-item.active .page-link, .page-item.active button {
+    background-color: #000; /* Active button background */
+    color: #fff; /* Active button text color */
+    border-color: #000; /* Ensure border is visible in active state */
+}
+
+.suggestions-section {
+  margin-top: 20px; /* Add some space above the suggestions section */
+}
+
+.suggestions-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /* Center the suggestions */
+  gap: 20px; /* Add some space between each suggestion */
+}
+
+.suggestion-result {
+  width: 180px; /* Set a fixed width for each suggestion */
+  text-align: center; /* Center the text and image */
+}
+
+.suggestion-result img {
+  width: 100%; /* Make the image fill the container */
+  height: auto; /* Maintain aspect ratio */
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* Optional: add a subtle shadow for depth */
+  border-radius: 4px; /* Optional: round the corners */
+}
+
+.suggestion-result span {
+  display: block; /* Ensure the title goes on a new line */
+  margin-top: 8px; /* Space between the image and title */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; /* Ensure long titles are truncated with an ellipsis */
+}
+
+

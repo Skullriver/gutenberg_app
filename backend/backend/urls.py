@@ -17,7 +17,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
+from search.views import get_random_books
+
 urlpatterns = [
     path('api/preprocess/', include('preprocess.urls')),
     path('api/search/', include('search.urls')),
+    path('api/random-books/', get_random_books, name='random-books'),
 ]
