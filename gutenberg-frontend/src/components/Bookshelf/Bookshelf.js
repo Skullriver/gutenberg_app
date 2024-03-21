@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import './bookshelf.css';
 import BookCover from '../BookCover/BookCover';
+import { Link } from 'react-router-dom';
 
 const Bookshelf = ({ books }) => {
     const [gridItems, setGridItems] = useState([]);
@@ -60,7 +61,9 @@ const Bookshelf = ({ books }) => {
         <div className="bookshelf">
             {gridItems.map((item, index) => (
                 item.type === 'book' ? (
-                    <BookCover key={index} title={item.content.title} cover={item.content.cover} />
+                    <Link key={index} to={`/books/${item.content.id}`}>
+                        <BookCover title={item.content.title} cover={item.content.cover} />
+                    </Link>
                 ) : (
                     <div key={index} className="book-letter">{item.content}</div>
                 )

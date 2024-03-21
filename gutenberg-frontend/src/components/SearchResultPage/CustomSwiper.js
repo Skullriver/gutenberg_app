@@ -1,33 +1,41 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import './CustomSwiper.css'; // Make sure to create a corresponding CSS file
 
 const CustomSwiper = ({ suggestions }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const booksToShow = 5; // Number of books to show at a time
 
   const goToNext = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === suggestions.length - 1 ? 0 : prevIndex + 1
-    );
+    setCurrentIndex(prevIndex => (prevIndex + 1) % suggestions.length);
   };
 
   const goToPrev = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? suggestions.length - 1 : prevIndex - 1
-    );
+    setCurrentIndex(prevIndex => (prevIndex - 1 + suggestions.length) % suggestions.length);
   };
 
-  const displayedBooks = suggestions.slice(currentIndex, currentIndex + 3);
+  const getDisplayedBooks = () => {
+    let displayed = [];
+    for (let i = 0; i < booksToShow; i++) {
+      displayed.push(suggestions[(currentIndex + i) % suggestions.length]);
+    }
+    return displayed;
+  };
+
+  const displayedBooks = getDisplayedBooks();
 
   return (
     <div className="custom-swiper">
       <button className="swiper-button prev" onClick={goToPrev}>&laquo;</button>
-      <div className="swiper-slide">
-        {suggestions.length > 0 && (
-          <div className="book">
-            <img src={suggestions[currentIndex].cover} alt={suggestions[currentIndex].title} />
-            <span>{suggestions[currentIndex].title}</span>
+      <div className="swiper-slides">
+        {displayedBooks.map((book, index) => (
+          <Link key={index} to={`/books/${book.id}`}>
+          <div className="swiper-slide">
+            <img src={book.cover} alt={book.title} />
+            <span>{book.title}</span>
           </div>
-        )}
+          </Link>
+        ))}
       </div>
       <button className="swiper-button next" onClick={goToNext}>&raquo;</button>
     </div>

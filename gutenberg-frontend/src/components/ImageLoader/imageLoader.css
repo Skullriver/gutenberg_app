@@ -1,0 +1,11 @@
+/* Add to your searchResultPage.css or a suitable CSS file */
+.image-loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px; /* Adjust based on your needs */
+    background-color: #f0f0f0; /* Placeholder background */
+    color: #333;
+    font-size: 16px;
+  }
+  

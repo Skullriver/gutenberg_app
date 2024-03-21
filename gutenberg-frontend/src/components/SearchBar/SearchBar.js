@@ -1,6 +1,8 @@
 // SearchBar.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import './searchBar.css';
 
 const SearchBar = ({ onSearch, initialSearchTerm = '' }) => {
@@ -16,6 +18,10 @@ const SearchBar = ({ onSearch, initialSearchTerm = '' }) => {
       // Perform search without redirecting (for SearchResultPage)
       onSearch(searchTerm);
     } else {
+      sessionStorage.removeItem('searchTerm');
+      sessionStorage.removeItem('searchResults');
+      sessionStorage.removeItem('searchSuggestions');
+
       // Navigate to SearchResultPage with searchTerm (for MainPage)
       navigate('/search', { state: { query: searchTerm } });
     }
@@ -27,6 +33,10 @@ const SearchBar = ({ onSearch, initialSearchTerm = '' }) => {
     }
   };
 
+  const clearSearch = () => {
+    setSearchTerm(''); // Clear the search input
+  };
+
   return (
     <div className="search-bar">
       <input
@@ -36,7 +46,12 @@ const SearchBar = ({ onSearch, initialSearchTerm = '' }) => {
         onChange={(e) => setSearchTerm(e.target.value)}
         onKeyPress={handleKeyPress}
       />
-      <button onClick={handleSearch}>Search</button>
+      {searchTerm && (
+        <button onClick={clearSearch} className="clear-search">
+          <FontAwesomeIcon icon={faTimes} />
+        </button>
+      )}
+      <button className='search-button' onClick={handleSearch}>Search</button>
     </div>
   );
 };

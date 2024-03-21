@@ -30,6 +30,7 @@
   .book-result img {
     width: 130px; /* Fixed width for images */
     height: auto; /* Fixed height for images */
+    min-height: 195px;
     object-fit: cover; /* Ensures the images cover the area without distorting */
     box-shadow: -10px 10px 25px rgba(0, 0, 0, 0.4); /* Adds shadow effect */
     margin-bottom: 25px; /* Adds some space below the image */
@@ -38,6 +39,7 @@
   .book-result span {
     font-size: 1rem; /* Sets the font size to 1.2rem */
     font-weight: 600;
+    color: #000;
     text-align: center; /* Centers the text */
     margin-bottom: 5px; /* Adds some space below the text */
     max-width: 130px;
@@ -108,6 +110,8 @@
 
 .suggestions-section {
   margin-top: 20px; /* Add some space above the suggestions section */
+  text-align: center;
+  margin-bottom: 50px;
 }
 
 .suggestions-list {

@@ -8,8 +8,30 @@ from django.db import connection
 from itertools import combinations
 import re
 import math
+from django.core.exceptions import ObjectDoesNotExist
 
 from math import log
+
+def book_details(request, book_id):
+    try:
+        book = Book.objects.get(pk=book_id)
+        data = {
+            'book_id': book.book_id,
+            'type': book.type,
+            'issued': book.issued,
+            'title': book.title,
+            'language': book.language,
+            'authors': book.authors,
+            'subjects': book.subjects,
+            'locc': book.locc,
+            'bookshelves': book.bookshelves,
+            'cover': f'https://www.gutenberg.org/cache/epub/{book.book_id}/pg{book.book_id}.cover.medium.jpg',
+            'text_link': f'https://gutenberg.org/cache/epub/{book.book_id}/pg{book.book_id}.txt'
+        }
+        return JsonResponse(data)
+    except ObjectDoesNotExist:
+        return JsonResponse({'error': 'Book not found'}, status=404)
+
 
 
 def simplified_proximity_score(word_positions, query_words):
@@ -172,7 +194,7 @@ def prepare_results(result, query_words, is_phrase_query, is_regex):
                 'id': book_id,
                 'title': title,
                 'authors': authors,
-                'cover': f'https://www.gutenberg.org/cache/epub/{book_id}/{book_id}-cover.png',
+                'cover': f'https://www.gutenberg.org/cache/epub/{book_id}/pg{book_id}.cover.medium.jpg',
                 'words': [],
                 'proximity_score': 0, 
                 'tf_idf_score': 0,
@@ -358,7 +380,7 @@ def search_books_old(request):
                 'id': book_id,
                 'title': title,
                 'authors': authors,
-                'cover': f'https://www.gutenberg.org/cache/epub/{book_id}/{book_id}-cover.png',
+                'cover': f'https://www.gutenberg.org/cache/epub/{book_id}/pg{book_id}.cover.medium.jpg',
                 'words': [],
                 'proximity_score': 0, 
                 'tf_idf_score': 0,
@@ -413,6 +435,7 @@ def search_books_old(request):
         books_suggestions.extend(suggestions)
      
     return JsonResponse({'results': books_info, 'suggestions': books_suggestions})
+
 
 def get_random_books(request):
     

@@ -4,6 +4,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import SearchResultPage from './components/SearchResultPage/SearchResultPage'; // Assume you have this component
 import SearchRegexPage from './components/SearchRegexPage/SearchRegexPage';
+import BookDetails from './components/BookDetails/BookDetails';
 
 import MainPage from './components/MainPage/MainPage';
 
@@ -15,6 +16,7 @@ function App() {
           <Route path="/" exact element={<MainPage/>} />
           <Route path="/search" element={<SearchResultPage/>} />
           <Route path="/regex_search" element={<SearchRegexPage/>} />
+          <Route path="/books/:id" element={<BookDetails/>} />
         </Routes>
       </div>
     </Router>

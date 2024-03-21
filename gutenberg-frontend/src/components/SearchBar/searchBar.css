@@ -1,5 +1,7 @@
 .search-bar {
     display: flex;
+    position: relative;
+    align-items: center;
     width: 100%;
     max-width: 600px;
     margin: 0 auto;
@@ -8,13 +10,20 @@
 
 .search-bar input {
     flex: 1;
+    flex-grow: 1;
     padding: 10px;
+    padding-right: 45px;
     font-size: 1rem;
     border: 1px solid #ddd;
     border-radius: 15px 0 0 15px;
 }
 
-.search-bar button {
+.button-group {
+    display: flex; /* Align buttons inline */
+    gap: 15px; /* Spacing between buttons */
+  }
+
+.search-bar .search-button {
     padding: 10px 20px;
     font-size: 1rem;
     color: #fff;
@@ -23,3 +32,22 @@
     border: none;
     cursor: pointer;
 }
+
+.clear-search {
+    position: absolute;
+    right: 18%; /* Adjust based on desired position from the right end */
+    top: 50%;
+    transform: translateY(-50%); /* Center vertically */
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    padding: 0;
+  }
+  
+  /* You can also style the icon directly if needed, for example: */
+  .clear-search .svg-inline--fa {
+    color: #333; /* Icon color */
+    width: 1em; /* Icon size */
+    height: 1em;
+  }
+  

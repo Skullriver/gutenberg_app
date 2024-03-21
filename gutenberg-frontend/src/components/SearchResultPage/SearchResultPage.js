@@ -6,6 +6,8 @@ import PaginationElem from '../SearchResultPage/Pagination';
 import CustomSwiper from '../SearchResultPage/CustomSwiper';
 import './searchResultPage.css';
 import Header from '../Header/Header';
+import ImageLoader from '../ImageLoader/ImageLoader';
+import { Link } from 'react-router-dom';
 
 
 const SearchResultPage = () => {
@@ -19,11 +21,22 @@ const SearchResultPage = () => {
     const [booksPerPage] = useState(10);
     
     useEffect(() => {
-      // Perform initial search if query is provided in state
-      if (searchTerm) {
+      
+      // Retrieve stored search term, results, and suggestions
+      const storedSearchTerm = sessionStorage.getItem('searchTerm');
+      const storedResults = sessionStorage.getItem('searchResults');
+      const storedSuggestions = sessionStorage.getItem('searchSuggestions');
+    
+      if (storedSearchTerm) setSearchTerm(storedSearchTerm)
+      else setSearchTerm(searchTerm);
+      if (storedResults) setResults(JSON.parse(storedResults));
+      if (storedSuggestions) setSuggestions(JSON.parse(storedSuggestions));
+    
+      // Perform a new search if searchTerm is provided and storage is empty
+      if (!storedResults && searchTerm) {
         performSearch(searchTerm);
       }
-    }, [searchTerm]);
+    }, []);
   
     const performSearch = async (searchTerm) => {
       setIsLoading(true);
@@ -33,6 +46,11 @@ const SearchResultPage = () => {
         });
         const books = Object.values(response.data.results);
         const suggestions =  Object.values(response.data.suggestions);
+
+        sessionStorage.setItem('searchTerm', searchTerm);
+        sessionStorage.setItem('searchResults', JSON.stringify(books));
+        sessionStorage.setItem('searchSuggestions', JSON.stringify(suggestions));
+
         setResults(books || []);
         setSuggestions(suggestions || []);
       } catch (error) {
@@ -42,6 +60,12 @@ const SearchResultPage = () => {
       } finally {
         setIsLoading(false);
       }
+    };
+
+    const handlePageChange = newPage => {
+      setIsLoading(true);  // Trigger loading state
+      setCurrentPage(newPage);  // Change to the new page
+      setTimeout(() => setIsLoading(false), 150);
     };
 
     const indexOfLastBook = currentPage * booksPerPage;
@@ -60,21 +84,23 @@ const SearchResultPage = () => {
         <div className="results">
           <div className="results-list">
             {currentBooks.map((book, index) => (
-              <div key={index} className="book-result">
-                <img src={book.cover} alt={book.title} />
-                <span>{book.title}</span>
-              </div>
+              <Link key={index} to={`/books/${book.id}`}>
+                <div className="book-result">
+                {/* <ImageLoader src={book.cover} alt={book.title} /> */}
+                  <img src={book.cover} alt={book.title} />
+                  <span>{book.title}</span>
+                </div>
+              </Link>
             ))}
           </div>
           <PaginationElem booksPerPage={booksPerPage} 
           totalBooks={results.length} 
-          paginate={setCurrentPage} 
+          paginate={handlePageChange} 
           currentPage={currentPage}  />
           {suggestions.length > 0 && (
             <div className="suggestions-section">
               <h2>You Might Also Like</h2>
               <CustomSwiper suggestions={suggestions} />
-              
             </div>
           )}
         </div>
